@@ -1,0 +1,10 @@
+numpy>=1.24
+matplotlib>=3.7
+scipy>=1.10
+torch>=2.1
+transformers>=4.36
+accelerate>=0.25
+bitsandbytes>=0.41
+datasets>=2.14
+pytest>=7.4
+tqdm>=4.65
