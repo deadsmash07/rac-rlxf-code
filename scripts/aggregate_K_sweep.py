@@ -1,9 +1,9 @@
 """Aggregate K-channel sweep (K ∈ {3, 5, 7, 10}) into one table ().
 
 Reads the per-K `validation.json` outputs from
-`results/track2_tensor_lambda_multichannel{,_K5,_K7,_K10}/` and emits:
+`results/tensor_lambda_multichannel{,_K5,_K7,_K10}/` and emits:
 
-- `results/track2_tensor_lambda_multichannel/K_sweep_summary.json`
+- `results/tensor_lambda_multichannel/K_sweep_summary.json`
 - a markdown table on stdout (copy-pasteable into paper §4.2)
 
 Paper claim being quantified: "RAC bias stays near the Monte-Carlo floor as
@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RES = ROOT / "results"
-OUT_DIR = RES / "track2_tensor_lambda_multichannel"
+OUT_DIR = RES / "tensor_lambda_multichannel"
 
 
 def load_one(path: Path):
@@ -44,10 +44,10 @@ def load_one(path: Path):
 def main():
     rows = []
     for subdir in [
-        "track2_tensor_lambda_multichannel",          # K=3
-        "track2_tensor_lambda_multichannel_K5",
-        "track2_tensor_lambda_multichannel_K7",
-        "track2_tensor_lambda_multichannel_K10",
+        "tensor_lambda_multichannel",          # K=3
+        "tensor_lambda_multichannel_K5",
+        "tensor_lambda_multichannel_K7",
+        "tensor_lambda_multichannel_K10",
     ]:
         r = load_one(RES / subdir / "validation.json")
         if r is not None:

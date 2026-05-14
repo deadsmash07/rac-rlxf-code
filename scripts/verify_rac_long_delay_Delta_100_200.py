@@ -9,7 +9,7 @@ schedule w_age(Δ)=exp(−Δ/τ_age) dominate scaling behaviour at long delays?"
 Setup
 -----
 - 5 MDP seeds: {1337, 42, 1024, 7777, 31337} — matches the K=2 MDP ablation
-  in ``results/track2_k2_mdp_seed_ablation/`` so the per-MDP range is
+  in ``results/k2_mdp_seed_ablation/`` so the per-MDP range is
   comparable to the paper's existing headline.
 - 3 MC seeds per MDP × 1000 trials = 3000 trajectories per cell — matches
   the paper's headline budget (verify_rac_gradient_correction.py default).
@@ -56,10 +56,10 @@ Usage
 
 Outputs
 -------
-    results/track2_rac_long_delay/delta_100.json    # τ_age ablation @ Δ=100
-    results/track2_rac_long_delay/delta_200.json    # τ_age ablation @ Δ=200
-    results/track2_rac_long_delay/summary.json      # full sweep table + verdict
-    results/figs/track2_rac_long_delay_sweep.png    # Δ-sweep + τ_age panel
+    results/rac_long_delay/delta_100.json    # τ_age ablation @ Δ=100
+    results/rac_long_delay/delta_200.json    # τ_age ablation @ Δ=200
+    results/rac_long_delay/summary.json      # full sweep table + verdict
+    results/figs/rac_long_delay_sweep.png    # Δ-sweep + τ_age panel
 """
 from __future__ import annotations
 
@@ -359,7 +359,7 @@ def parse_args(argv=None):
     p.add_argument("--trajectory-len", type=int, default=50)
     p.add_argument("--theta-seed", type=int, default=7)
     p.add_argument("--results-dir", type=Path,
-                   default=ROOT / "results" / "track2_rac_long_delay")
+                   default=ROOT / "results" / "rac_long_delay")
     p.add_argument("--figs-dir", type=Path, default=ROOT / "results" / "figs")
     return p.parse_args(argv)
 
@@ -504,7 +504,7 @@ def main(argv=None):
         json.dump(summary, f, indent=2, default=_json_default)
     print(f"\nWrote {args.results_dir}/delta_100.json, delta_200.json, summary.json")
 
-    fig_path = args.figs_dir / "track2_rac_long_delay_sweep.png"
+    fig_path = args.figs_dir / "rac_long_delay_sweep.png"
     make_figure(summary, args.deltas, args.tau_grid, fig_path)
     print(f"Wrote {fig_path}")
     print(f"\nTotal runtime: {time.time() - t0:.1f}s")

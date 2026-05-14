@@ -1,6 +1,6 @@
 """Forward-injected RAC δ-correction applied to the NEXT batch's advantages.
 
-Per memory/track2_verl_integration_verified.md: verl's `RayPPOTrainer.fit()`
+Per internal design notes: verl's `RayPPOTrainer.fit()`
 consumes advantages IMMEDIATELY (`_update_actor` at ray_trainer.py:1576), so
 we CANNOT retroactively mutate a consumed rollout's advantage. Instead:
 

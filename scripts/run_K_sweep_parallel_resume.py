@@ -1,14 +1,14 @@
 """ parallelization-orchestrator wrapper for cross-MDP-topology K-sweep.
 
 This driver is a THIN ORCHESTRATOR around `verify_K_sweep_cross_mdp_topology.py`.
-It does NOT modify the PREREG-faithful SCRIPT (`c835029`). It only changes
+It does NOT modify the faithful SCRIPT (`c835029`). It only changes
 *scheduling*: instead of looping topology × K × mdp_seed sequentially in one
 process, it forks N_WORKERS subprocesses (one per (topology, mdp_seed) outer
 cell) which each run all K values for their cell. Per-cell results are
 serialised to disk; the parent then aggregates and emits the same
 summary.json + topology_*.json + figure that the original SCRIPT would.
 
-PREREG-faithfulness:
+Faithfulness:
   - Every cell uses the same `aggregate_K2_per_mdp` / `run_Kgeq3_cell` from the
     original SCRIPT.
   - Same theta_seed=7, mdp_seeds, mc_seeds, n_trials=3000, K-grid, RACConfig.
@@ -19,30 +19,30 @@ PREREG-faithfulness:
     (topo, mdp, K, mc) cell's RNG is deterministic from (mc_seed, K) hash).
 
 Why this is needed:
-  - PREREG §6 self-flagged that K∈{15,20} cells have hostile per-trajectory cost
+  - the per-cell script self-flagged that K∈{15,20} cells have hostile per-trajectory cost
     that the sequential ETA (7.4 min) underestimated by ~50×.  #2
     KILL hit the 5h gate at 0/5 topologies. Empirical re-test in this iteration
     () confirms K=20 single (topo, mdp) cell at 3000 trials × 3 mc =
-    ~23 min wall on local CPU. Sequential total = ~21h. PREREG 5h gate cannot
+    ~23 min wall on local CPU. Sequential total = ~21h. pre-registered script 5h gate cannot
     be satisfied without parallelism.
-  - B200 GPU does NOT accelerate this pure-NumPy code (no torch tensors used
-    in the hot loops). The 52-core B200 host *does* allow 25-way parallelism
+  - GPU does NOT accelerate this pure-NumPy code (no torch tensors used
+    in the hot loops). The 52-core CPU host *does* allow 25-way parallelism
     across (topology, mdp_seed) outer cells.
 
 Honest disclosures (added EX-ANTE before this driver runs at scale):
-  1. This wrapper changes scheduling, not science. PREREG-faithful per cell.
-  2. CPU host parallelism, NOT GPU acceleration. The mission brief's "B200
+  1. This wrapper changes scheduling, not science. faithful per cell.
+  2. CPU host parallelism, NOT GPU acceleration. The design notes's "
      2.5x faster than H100" claim does not apply to this script.
   3. Per-cell RNG state is identical regardless of parallelism (each cell's
      RNG is seeded deterministically from (mc_seed, K)).
-  4. The 5h KILL gate is enforced per-PREREG: if elapsed_wall > 18000s the
-     parent kills all workers and emits verdict = KILLED-twice-FALSIFIED-
+  4. The 5h KILL gate is enforced per the kill-gate policy: if elapsed_wall > 18000s the
+     parent kills all workers and emits verdict = TIMEOUT-FALSIFIED-
      INFEASIBLE-permanent.
   5. Per-cell timeout = 60 min (each (topo, mdp_seed) cell across all K). If
      a cell exceeds this its result is marked TIMEOUT and the master verdict
      handles partial coverage.
 
-Author:  T2 K-sweep RIDE subagent 
+Author:  T2 K-sweep
 """
 from __future__ import annotations
 
@@ -110,7 +110,7 @@ def _worker_one_cell(args_tuple):
     # for theta SHAPE, which means theta SHAPE is determined by the FIRST mdp_seed
     # (1337 by default). We replicate that exactly: theta shape is from the FIRST
     # mdp_seed in the global grid, NOT from our local mdp_seed. This preserves
-    # PREREG-faithfulness across all parallel cells.
+    # faithfulness across all parallel cells.
     rng_theta = np.random.default_rng(theta_seed)
     sample_mdp = factory(seed=DEFAULT_MDP_SEEDS[0])
     theta = rng_theta.normal(
@@ -246,9 +246,9 @@ def parse_args(argv=None):
     p.add_argument("--n-workers", type=int, default=25,
                    help="Outer (topology, mdp_seed) parallelism. 5x5=25 cells.")
     p.add_argument("--max-wall-sec", type=int, default=18000,
-                   help="PREREG 5h KILL gate (18000s). NOT extendable.")
+                   help="5h kill gate (18000s). NOT extendable.")
     p.add_argument("--results-dir", type=Path,
-                   default=ROOT / "results" / "track2_K_sweep_cross_mdp_topology")
+                   default=ROOT / "results" / "k_sweep_cross_mdp_topology")
     p.add_argument("--figs-dir", type=Path, default=ROOT / "results" / "figs")
     p.add_argument("--smoke", action="store_true",
                    help="Smoke run with reduced grid; verdict NOT binding.")
@@ -271,7 +271,7 @@ def main(argv=None):
     args.figs_dir.mkdir(parents=True, exist_ok=True)
 
     print("=" * 96)
-    print(" cross-MDP-topology K-sweep RIDE (parallel orchestrator)")
+    print(" cross-MDP-topology K-sweep  (parallel orchestrator)")
     print("=" * 96)
     print(f"Topologies     = {args.topologies}")
     print(f"K-grid         = {args.K_grid}")
@@ -284,7 +284,7 @@ def main(argv=None):
           f"alpha_delta={args.alpha_delta}")
     print(f"noise_scale    = {args.noise_scale}")
     print(f"n_workers      = {args.n_workers}")
-    print(f"max_wall_sec   = {args.max_wall_sec} (PREREG 5h KILL gate)")
+    print(f"max_wall_sec   = {args.max_wall_sec} (5h kill gate)")
     n_outer = len(args.topologies) * len(args.mdp_seeds)
     print(f"Outer cells    = {len(args.topologies)} x {len(args.mdp_seeds)} "
           f"= {n_outer} (parallelised across n_workers={args.n_workers})")
@@ -345,22 +345,22 @@ def main(argv=None):
 
     elapsed_total = time.time() - t0
 
-    # If timed out, emit KILLED-twice verdict and write what we have
+    # If timed out, emit TIMEOUT verdict and write what we have
     if timed_out:
         print("\n" + "=" * 96)
-        print("VERDICT: KILLED-twice-FALSIFIED-INFEASIBLE-permanent")
+        print("VERDICT: TIMEOUT")
         print("=" * 96)
         print(f"Elapsed wall: {elapsed_total:.1f}s (gate {args.max_wall_sec}s)")
         print(f"Cells completed: {len(cell_walls)} / {n_outer}")
         verdict = dict(
-            verdict="KILLED-twice-FALSIFIED-INFEASIBLE-permanent",
+            verdict="TIMEOUT",
             verdict_reasons=[
                 f"5h gate fired at {elapsed_total:.1f}s "
-                f"(PREREG 5h={args.max_wall_sec}s); first KILL was 2026-04-27 "
-                " #2 commit 5d5d93d at 5h01m elapsed.",
+                f"(pre-registered script 5h={args.max_wall_sec}s); first KILL was 2026-04-27 "
+                " #2  at 5h01m elapsed.",
                 f"Cells completed: {len(cell_walls)} of {n_outer} "
                 f"(topology x mdp_seed). Insufficient for cross-topology "
-                "generalization claim per PREREG sec 4.",
+                "generalization claim per pre-registered script sec 4.",
             ],
             cells_completed=len(cell_walls),
             cells_required=n_outer,
@@ -371,7 +371,7 @@ def main(argv=None):
         partial_summary = dict(
             config=vars(args).copy(),
             prereg_sha="453363a",
-            prereg_file="PREREG_T2_K_SWEEP_CROSS_MDP_TOPOLOGY.md",
+            protocol_file="protocol.md",
             partial_per_topology_per_K_per_mdp=per_topology_per_K_per_mdp,
             verdict=verdict,
             runtime_sec=elapsed_total,
@@ -419,7 +419,7 @@ def main(argv=None):
         print(f"{t:>16s}  | " + "  |  ".join(cells))
 
     print("\n" + "=" * 96)
-    print("PREREG branch verdict")
+    print("pre-registered script branch verdict")
     print("=" * 96)
     print(f"  VERDICT: {verdict['verdict']}")
     print(f"  Reasons: {verdict['verdict_reasons']}")
@@ -445,7 +445,7 @@ def main(argv=None):
     summary = dict(
         config=config_dict,
         prereg_sha="453363a",
-        prereg_file="PREREG_T2_K_SWEEP_CROSS_MDP_TOPOLOGY.md",
+        protocol_file="protocol.md",
         per_topology=per_topology,
         verdict=verdict,
         runtime_sec=elapsed_total,
@@ -458,7 +458,7 @@ def main(argv=None):
     print(f"\nWrote {args.results_dir}/summary.json")
     print(f"Wrote {args.results_dir}/topology_*.json (n={len(args.topologies)})")
 
-    fig_path = args.figs_dir / "track2_K_sweep_cross_mdp_topology.png"
+    fig_path = args.figs_dir / "k_sweep_cross_mdp_topology.png"
     try:
         make_figure(summary, fig_path)
         print(f"Wrote {fig_path}")

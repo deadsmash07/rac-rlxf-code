@@ -1,7 +1,7 @@
 """RAC delay test: Heavy-tailed delay-distribution stress test for RAC.
 
-Pre-registered in `PREREG_FT2_HEAVY_TAIL_DELAY.md` (commit 1b1591a, 2026-04-26
-04:36 IST). Implements the design verbatim — 5 delay distributions matched at
+Pre-registered.md` (, 2026-04-26
+04:36). Implements the design verbatim — 5 delay distributions matched at
 E[Delta]=20, 5 MDP seeds x 3 MC seeds x 5 distributions x 3 tau_age x 1000 trials
 = 75 cells x 3000 trajectories each.
 
@@ -33,11 +33,11 @@ oracle_pg_estimator, true_policy_gradient, softmax_policy, RACConfig). The ONLY
 new logic is `sample_delays_for_distribution()` and the per-trajectory
 RAC re-run loop (one global_step per trajectory, not one per cell).
 
-PREREG branches (4-way mutually exclusive, gated at tau_age=200):
-  ESTABLISHED-ROBUST     : reduction_min(all 5 dists) >= 7   AND
+pre-registered script branches (4-way mutually exclusive, gated at tau_age=200):
+  PASS     : reduction_min(all 5 dists) >= 7   AND
                            mean(heavy_tail_group) >= 0.75 * deterministic AND
                            vif_fast_max(all 5) < 2
-  MODERATE-DEGRADATION   : reduction_min(all 5 dists) >= 3   AND
+  PARTIAL   : reduction_min(all 5 dists) >= 3   AND
                            mean(heavy_tail_group) >= 0.5  * deterministic
   PRELIMINARY-TAIL-SENS  : at least one dist red_min >= 1.5  AND
                            vif_fast_mean(all 5) < 3      AND
@@ -46,9 +46,9 @@ PREREG branches (4-way mutually exclusive, gated at tau_age=200):
                            OR vif_fast_mean >= 3 at tau_age=200
 
 Outputs:
-  results/track2_rac_heavy_tail_delay/summary.json        full 75-cell aggregate + verdict
-  results/track2_rac_heavy_tail_delay/delta_dist_<name>.json  per-distribution slice
-  results/figs/track2_rac_heavy_tail_delay.png            3-panel figure
+  results/rac_heavy_tail_delay/summary.json        full 75-cell aggregate + verdict
+  results/rac_heavy_tail_delay/delta_dist_<name>.json  per-distribution slice
+  results/figs/rac_heavy_tail_delay.png            3-panel figure
 
 Wall-clock: ~60 min single CPU thread (375 000 trajectories total).
 """
@@ -107,7 +107,7 @@ def sample_delays_for_distribution(
     All distributions are calibrated so the *unclipped* expectation equals
     target_mean (= 20). Clipping/truncation may shift the realised mean for
     very heavy tails (cauchy_trunc); the realised empirical mean+variance is
-    REPORTED and disclosed (PREREG honest-disclosure obligation #1).
+    REPORTED and disclosed (pre-registered script honest-disclosure obligation #1).
     """
     if name == "deterministic":
         return np.full(n, int(target_mean), dtype=np.int64)
@@ -322,18 +322,18 @@ def run_one_mdp(
 
 
 # =============================================================================
-# Verdict logic — direct PREREG transcript
+# Verdict logic — direct pre-registered script transcript
 # =============================================================================
 
 
 def evaluate_branches(agg_by_cell: dict[str, dict], deterministic_anchor_red: float,
                        gate_tau_age: int = 200,
                        distributions: list[str] = None) -> dict[str, Any]:
-    """Return PREREG branch verdict at tau_age=gate_tau_age (200).
+    """Return pre-registered script branch verdict at tau_age=gate_tau_age (200).
 
     Uses the supplied `distributions` list (defaults to canonical 5). Smoke
     tests with a subset return a SMOKE verdict marker so we never silently
-    pretend a partial sweep passed PREREG.
+    pretend a partial sweep passed pre-registered script.
     """
     if distributions is None:
         distributions = DISTRIBUTIONS
@@ -372,11 +372,11 @@ def evaluate_branches(agg_by_cell: dict[str, dict], deterministic_anchor_red: fl
         and (math.isnan(heavy_mean_red) or math.isnan(det_red) or heavy_mean_red >= 0.75 * det_red)
         and all_vif_max_lt_2
     ):
-        verdict = "ESTABLISHED-ROBUST"
+        verdict = "PASS"
     elif all_red_min_ge_3 and (
         math.isnan(heavy_mean_red) or math.isnan(det_red) or heavy_mean_red >= 0.50 * det_red
     ):
-        verdict = "MODERATE-DEGRADATION"
+        verdict = "PARTIAL"
     else:
         # Branch 3 detection — monotone tail-heaviness ordering on the run subset
         ordered_full = ["deterministic", "gaussian", "lognormal", "pareto_finite", "cauchy_trunc"]
@@ -393,7 +393,7 @@ def evaluate_branches(agg_by_cell: dict[str, dict], deterministic_anchor_red: fl
             verdict = "PRELIMINARY-TAIL-SENSITIVE-NONMONOTONE"
 
     if smoke_mode:
-        verdict = f"SMOKE-{verdict}"  # never silently pass PREREG on partial run
+        verdict = f"SMOKE-{verdict}"  # never silently pass pre-registered script on partial run
 
     return dict(
         verdict=verdict,
@@ -538,9 +538,9 @@ def parse_args(argv=None):
     p.add_argument("--target-mean", type=float, default=20.0,
                    help="E[Delta] target across all distributions (matched).")
     p.add_argument("--gate-tau-age", type=int, default=200,
-                   help="tau_age value at which PREREG branches are gated.")
+                   help="tau_age value at which pre-registered script branches are gated.")
     p.add_argument("--results-dir", type=Path,
-                   default=ROOT / "results" / "track2_rac_heavy_tail_delay")
+                   default=ROOT / "results" / "rac_heavy_tail_delay")
     p.add_argument("--figs-dir", type=Path, default=ROOT / "results" / "figs")
     return p.parse_args(argv)
 
@@ -653,9 +653,9 @@ def main(argv=None):
               f"mean_of_p99s={pooled_emp_stats[d]['mean_of_p99s']:6.1f}  "
               f"mean_of_maxs={pooled_emp_stats[d]['mean_of_maxs']:6.1f}")
 
-    # PREREG branch verdict at gate_tau_age
+    # pre-registered script branch verdict at gate_tau_age
     print("\n" + "=" * 96)
-    print(f"PREREG branch verdict (gated at tau_age={args.gate_tau_age})")
+    print(f"pre-registered script branch verdict (gated at tau_age={args.gate_tau_age})")
     print("=" * 96)
     verdict = evaluate_branches(agg_by_cell, deterministic_anchor_red=0.0,
                                   gate_tau_age=args.gate_tau_age,
@@ -696,7 +696,7 @@ def main(argv=None):
             gate_tau_age=args.gate_tau_age,
         ),
         prereg_sha="1b1591a",
-        prereg_file="PREREG_FT2_HEAVY_TAIL_DELAY.md",
+        protocol_file="protocol.md",
         agg_by_cell=agg_by_cell,
         pooled_empirical_delay_stats=pooled_emp_stats,
         per_mdp=per_mdp,
@@ -707,7 +707,7 @@ def main(argv=None):
         json.dump(summary, f, indent=2, default=_json_default)
     print(f"\nWrote {args.results_dir}/summary.json (+ 5 delta_dist_*.json)")
 
-    fig_path = args.figs_dir / "track2_rac_heavy_tail_delay.png"
+    fig_path = args.figs_dir / "rac_heavy_tail_delay.png"
     make_figure(summary, args.distributions, args.tau_grid, fig_path)
     print(f"Wrote {fig_path}")
     print(f"\nTotal runtime: {time.time() - t0:.1f}s")

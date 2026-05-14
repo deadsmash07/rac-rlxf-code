@@ -13,7 +13,7 @@ eigenvector of the policy-induced transition kernel for d_π), that:
       age-decay and IS-drift confounds) has MUCH lower bias — the theorem
       predicts EXACT unbiasedness when the policy has not drifted (A3 in
       team2_appendix_A3_proof_sketch.md, empirically re-validated in
-      memory/team2_a3_empirical_upgrade.md — 10k trials × 3 KL × 4 Λ).
+      internal design notes — 10k trials × 3 KL × 4 Λ).
   (3) RAC does not inflate variance catastrophically:
       variance_RAC / variance_naive < 2× (VIF gate).
 
@@ -32,10 +32,10 @@ References
     ρ_i^clip mirrors the V-trace clipping convention (ε around 1).
 [3] FINAL_REVIEW_V2/02_Team2_DelayAwareRLHF/team2_appendix_A3_proof_sketch.md
     — RAC estimator's exact-unbiasedness property under assumption (U-i).
-[4] memory/team2_a3_empirical_upgrade.md — Monte Carlo re-validation of
+[4] internal design notes — Monte Carlo re-validation of
     the A3 claim after round-2 review downgraded it to "consistent up to
     slack"; the upgraded version is what this validator corroborates.
-[5] memory/team2_verl_integration_verified.md — the forward-injection
+[5] internal design notes — the forward-injection
     semantics (δ lands on the NEXT step's advantage) are reproduced
     literally by the `apply_rac_correction` call pattern used here.
 
@@ -48,8 +48,8 @@ Usage
 
 Outputs
 -------
-    results/track2_rac_gradient_validation/validation.json  # metrics
-    results/figs/track2_rac_validation.png                  # 2-panel figure
+    results/rac_gradient_validation/validation.json  # metrics
+    results/figs/rac_validation.png                  # 2-panel figure
 
 Runtime: <90s on a single CPU core at n_trials=1000 × 3 seeds = 3000
 trajectories per Δ cell × 3 Δ = 9 MC cells. The theorem's EXACT-unbias
@@ -574,7 +574,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--vif-gate", type=float, default=2.0,
                    help="Pass/fail threshold for variance inflation factor.")
     p.add_argument("--results-dir", type=Path,
-                   default=ROOT / "results" / "track2_rac_gradient_validation")
+                   default=ROOT / "results" / "rac_gradient_validation")
     p.add_argument("--figs-dir", type=Path, default=ROOT / "results" / "figs")
     return p.parse_args(argv)
 
@@ -615,7 +615,7 @@ def main(argv: list[str] | None = None) -> int:
     print("      the age discount w_age ≈ 1) and is_clip=1.0 (clamps IS ratio")
     print("      to [0, 2]; identity actor keeps ρ=1 exactly). This isolates")
     print("      the correction-magnitude math — IS-drift and age-decay are")
-    print("      validated separately (see memory/team2_a3_empirical_upgrade.md).")
+    print("      validated separately (see internal design notes).")
     print("-" * 78)
 
     per_delta_cells: dict[int, dict[str, Any]] = {}
@@ -704,7 +704,7 @@ def main(argv: list[str] | None = None) -> int:
         json.dump(out, f, indent=2, default=_json_default)
     print(f"Wrote {json_path}")
 
-    fig_path = args.figs_dir / "track2_rac_validation.png"
+    fig_path = args.figs_dir / "rac_validation.png"
     make_figure(
         deltas=args.deltas,
         bias_naive=[per_delta_cells[d]["bias_naive"] for d in args.deltas],

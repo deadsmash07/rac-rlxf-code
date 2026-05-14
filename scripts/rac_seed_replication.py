@@ -3,9 +3,8 @@
 Authoring metadata
 ------------------
 - Iteration:  (seed-robustness replication)
-- Dispatch target: RunPod GPU A (H100 80GB; pod port 17321; host 103.207.149.65)
 - Skill citation: professional-rl-reviewer Section replication-robustness +
-  launch-runpod-h100-job Section dispatch.
+  remote H100 launch dispatch.
 
 What this script does
 ---------------------
@@ -94,8 +93,8 @@ def run_identity_check(
     mean_abs_diff = float(np.mean(np.abs(diff)))
     passed = max_abs_diff < threshold
     verdict = (
-        "ESTABLISHED-IDENTITY-AT-LLM-SCALE" if passed
-        else "FALSIFIED-IDENTITY-AT-LLM-SCALE"
+        "PASS" if passed
+        else "FAIL"
     )
     return {
         "head_seed": int(head_seed),
@@ -361,7 +360,7 @@ def main():
             "all_slack_passed_machine_zero": bool(all_slack_pass),
             "overall_pass": bool(all_identity_pass and all_slack_pass),
             "verdict_class": (
-                "ESTABLISHED-REPLICATION-ACROSS-SEEDS"
+                "PASS"
                 if (all_identity_pass and all_slack_pass)
                 else "FAILED-REPLICATION-ACROSS-SEEDS"
             ),

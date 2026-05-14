@@ -1,6 +1,6 @@
 """Tests for RAC forward-injection semantics.
 
-Per memory/track2_verl_integration_verified.md: verl consumes advantages
+Per internal design notes: verl consumes advantages
 immediately, so we can't retroactively modify a past advantage. Our RAC
 correction δ must instead forward-inject: add to the NEXT step's partial
 advantage. This module tests that property explicitly.

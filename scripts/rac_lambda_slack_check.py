@@ -2,10 +2,9 @@
 
 Authoring metadata
 ------------------
-- Dispatch target: RunPod GPU A (H100 80GB; pod port 17321; host 103.207.149.65)
 - Skill citation: professional-rl-reviewer §theorem-tightness +
   research-grade-code-audit-pre-launch (G1-G12 inline self-audit passed) +
-  launch-runpod-h100-job §dispatch.
+  remote H100 launch.
 
 What this script does
 ---------------------
@@ -51,11 +50,11 @@ results/rac_lambda_slack_check/results.json:
     ratio (actual / predicted), verdict_class
   - r_fast.npy, r_slow.npy: raw N=500 reward arrays (for future reuse)
 
-Run example (GPU A; from /workspace/2_Delay_Aware_RLHF)
+Run example
 -------------------------------------------------------
   python -m scripts.rac_lambda_slack_check \
       --n_prompts 500 \
-      --output_dir /workspace/2_Delay_Aware_RLHF/results/rac_lambda_slack_check
+      --output_dir .//results/rac_lambda_slack_check
 """
 from __future__ import annotations
 
@@ -174,8 +173,8 @@ def evaluate_kernel(
     if deficit == 0.0:
         passed = max_abs_bias < 1e-9
         verdict_class = (
-            "ESTABLISHED-ROW-STOCHASTIC-ZERO-BIAS" if passed
-            else "FALSIFIED-ROW-STOCHASTIC-ZERO-BIAS"
+            "PASS" if passed
+            else "FAIL"
         )
     else:
         # PASS if pointwise ratio is essentially 1 everywhere (theorem-exact)
@@ -190,11 +189,11 @@ def evaluate_kernel(
         )
         passed = bool(tight or loose)
         if tight:
-            verdict_class = "ESTABLISHED-SLACK-EXACT-POINTWISE"
+            verdict_class = "PASS"
         elif loose:
-            verdict_class = "ESTABLISHED-SLACK-AGGREGATE"
+            verdict_class = "PASS"
         else:
-            verdict_class = "FALSIFIED-SLACK-PREDICTION"
+            verdict_class = "FAIL"
 
     return {
         "lambda_zero": float(lambda_zero),

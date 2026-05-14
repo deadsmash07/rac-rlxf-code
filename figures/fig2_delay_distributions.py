@@ -1,7 +1,7 @@
 """Figure 2 (P2 RLxF) --- Five delay distributions matched at the same
 expected delay.
 
-REGENERATED 2026-04-28 23:35 IST per user 23:30 IST critique:
+REGENERATED: per user feedback:
   - replaced dashed/dotted/dash-dot linestyles with SOLID lines of
     distinct hues (Wong + Tol palettes).  Differentiation is now
     purely chromatic; no linestyle confusion at column-width.
@@ -9,8 +9,8 @@ REGENERATED 2026-04-28 23:35 IST per user 23:30 IST critique:
     thinned the vertical pin (lw 1.0 -> 0.7); it now reads as a
     thin spike rather than a covering blob.
 
-PRIOR 2026-04-28 22:21 IST: x-axis tightened to 5..50; legend moved.
-PRIOR 2026-04-28 21:10 IST: switched cividis to Wong-derived palette.
+PRIOR: x-axis tightened to 5..50; legend moved.
+PRIOR: switched cividis to Wong-derived palette.
 
 Anonymity-clean.
 """
@@ -45,8 +45,8 @@ def main() -> None:
     ]
 
     # Deterministic point mass: small marker + thin vertical pin.
-    # Reduced from ms=6.5/lw=1.0 to ms=4.0/lw=0.7 per user critique
-    # 23:30 IST: prior version was a "big dot covering everything up".
+    # Reduced from ms=6.5/lw=1.0 to ms=4.0/lw=0.7 per user feedback:
+    # 23:30: prior version was a "big dot covering everything up".
     det = np.zeros_like(grid, dtype=float)
     det[target_mean - 1] = 1.0
     ax.vlines(target_mean, 0, 1.0, color=colors[0], lw=0.7, zorder=2)
@@ -97,8 +97,8 @@ def main() -> None:
             color=WONG["grey"], fontsize=7.5,
             transform=ax.get_xaxis_transform())
 
-    # x-range tightened from 1..80 to 5..50 per user critique 22:13
-    # IST.  Active region (target_mean=20) sits at panel center;
+    # x-range tightened from 1..80 to 5..50 per user feedback: 22:13
+    #.  Active region (target_mean=20) sits at panel center;
     # heavy-tailed distributions still show their tail-behavior
     # within the 30-50 right-region without the 50-80 dead-space.
     ax.set_xlim(5, 50)

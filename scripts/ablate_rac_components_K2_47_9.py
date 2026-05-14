@@ -34,7 +34,7 @@ resampled with B=1000 replicates, matching `verify_rac_gradient_correction`
 practice.
 
 Outputs:
-    results/track2_b2_ablation_47_9/ablation.json
+    results/b2_ablation_47_9/ablation.json
 
 Usage:
     python scripts/ablate_rac_components_K2_47_9.py
@@ -183,7 +183,7 @@ def main() -> int:
             print(f"  Delta={delta}: {m['reduction_factor']:.2f}x  "
                   f"VIF={m['vif']:.2f}")
 
-    out_dir = ROOT / "results" / "track2_b2_ablation_47_9"
+    out_dir = ROOT / "results" / "b2_ablation_47_9"
     out_dir.mkdir(parents=True, exist_ok=True)
     out = {
         "config": dict(

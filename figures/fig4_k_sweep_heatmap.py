@@ -1,9 +1,9 @@
 """Figure 4 (P2 RLxF) --- T2 cross-MDP-topology K-sweep heatmap.
 
-REGENERATED 2026-05-12: replaced prior synthetic-label placeholder
+REGENERATED: replaced prior synthetic-label placeholder
 (topologies {chain, branch, star, tree, lattice} with hand-picked
 cell values) with the actual cross-topology experiment data from
-track2_K_sweep_cross_mdp_topology/topology_*.json.
+k_sweep_cross_mdp_topology/topology_*.json.
 
 Source data: per_K_topology_aggregate.<K>.reduction_topology_mean for
 each topology, computed as the mean reduction-factor across 5 mdp
@@ -41,7 +41,7 @@ import os
 # Override via RAC_RESULTS_DIR env var; default is the in-repo results dir.
 DATA_ROOT = os.environ.get(
     "RAC_RESULTS_DIR",
-    "results/track2_K_sweep_cross_mdp_topology",
+    "results/k_sweep_cross_mdp_topology",
 )
 
 # Ordered (display-label, json-filename) pairs.  Display labels

@@ -1,6 +1,6 @@
 """PatchedRayPPOTrainer — verl RayPPOTrainer subclass with RAC hooks.
 
-Design (per memory/track2_verl_integration_verified.md + src/verl_integration_notes.md §4):
+Design (per internal design notes + src/verl_integration_notes.md §4):
 
 verl's `RayPPOTrainer.fit()` (verl/trainer/ppo/ray_trainer.py:1292) computes
 advantages at L1552 and consumes them at L1583 via `self._update_actor(batch)`.

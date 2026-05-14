@@ -1,7 +1,7 @@
 """Figure 3 (P2 RLxF) --- K closed-form policy-bias reduction:
 RAC vs naive PPO baseline on the canonical tabular MDP.
 
-REGENERATED 2026-04-28 22:21 IST per user repeat critique
+REGENERATED: per user feedback:
 ("green is almost not visible"):
   - swapped Wong "blu_green" (#009E73, low-saturation washed-out
     on white at print-size + log-y) for Paul Tol's qualitative
@@ -17,7 +17,7 @@ REGENERATED 2026-04-28 22:21 IST per user repeat critique
   - Per Tufte: small effect-size deserves a deliberate visual
     anchor; the reader should not have to squint.
 
-PRIOR REGENERATION 2026-04-28 21:10 IST: switched to log-y;
+PRIOR REGENERATION : switched to log-y;
 moved ratio labels to geometric midpoint; dropped methodology
 from title.
 
@@ -56,7 +56,7 @@ def main() -> None:
 
     # Tol 2018 qualitative palette: deeper green that survives the
     # 300-dpi print pipeline + log-y compression. Wong's blu_green
-    # (#009E73) was reading as a washed-out sliver per user critique.
+    # (#009E73) was reading as a washed-out sliver per user feedback:.
     TOL_TEAL_GREEN = "#117733"
 
     ax.bar(x - w / 2, naive_bias, w, yerr=naive_err,

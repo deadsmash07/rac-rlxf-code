@@ -1,8 +1,7 @@
 """Figure 5 (P2 RLxF) --- Cost-quality Pareto plot:
 wall-clock-multiplier x bias-reduction-ratio with RAC Pareto-dominant.
 
-Authored 2026-04-30 IST per ICML reviewer agent (joint synthesis
-22:15 IST 2026-04-29) Improvement 3: "Add cost-quality tradeoff
+Authored  Improvement 3: "Add cost-quality tradeoff
 figure (2-D scatter: wall-clock x bias-reduction with RAC
 Pareto-dominant)."
 
@@ -29,8 +28,8 @@ from _figstyle import WONG, set_pub_style, save_fig, here
 def main() -> None:
     set_pub_style()
 
-    # Wider + taller for legend-above-axes layout per user critique
-    # ("legend is on the plot itself and hindering it") 14:55 IST 2026-04-30.
+    # Wider + taller for legend-above-axes layout per user feedback:
+    # ("legend is on the plot itself and hindering it") .
     fig, ax = plt.subplots(figsize=(4.4, 3.2))
 
     # Data anchored on Tab 1 "K=2 baseline cmp." block.  All four
@@ -51,8 +50,8 @@ def main() -> None:
 
     # Annotate each point with its (wc, red) tuple. Offsets chosen so that
     # text never lands underneath a marker; zorder=10 forces text above the
-    # scatter markers (zorder=5) for double safety per user critique
-    # ("blue dot covers the number") 15:25 IST 2026-04-30.
+    # scatter markers (zorder=5) for double safety per user feedback:
+    # ("blue dot covers the number") .
     annotations = [
         # name              wc      red    dx     dy   ha
         ("naive PPO",       1.00,   1.0,  -0.10,  -0.20,  "right"),  # below-left of marker

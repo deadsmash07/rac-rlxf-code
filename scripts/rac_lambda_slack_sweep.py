@@ -2,13 +2,12 @@
 
 Authoring metadata
 ------------------
-- Dispatch target: RunPod GPU A (H100; pod port 17321; host 103.207.149.65)
 - Skill citation: professional-rl-reviewer Section theorem-tightness +
-  launch-runpod-h100-job Section dispatch.
+  remote H100 launch dispatch.
 
 What this script does
 ---------------------
-Strengthens the single-point slack-verification from commit a9e07eb (which
+Strengthens the single-point slack-verification from  (which
 showed that at deficit eta=0.15 the empirical Lambda-slack matches the
 predicted slack pointwise with ratio = 1.0 exactly) to a SWEEP across
 eta in {0.05, 0.10, 0.15, 0.20, 0.30, 0.50}. If the ratio = 1.0 at every
@@ -26,11 +25,11 @@ mean signed and abs bias, pointwise ratio mean and std, verdict_class.
 results/rac_lambda_slack_sweep/lambda_slack_sweep.pdf: 1-panel plot,
 x=eta, y=mean abs bias (empirical and predicted overlaid).
 
-Run example (GPU A; from /workspace/2_Delay_Aware_RLHF)
+Run example
 -------------------------------------------------------
   python -m scripts.rac_lambda_slack_sweep \
-      --cache_dir /workspace/2_Delay_Aware_RLHF/results/rac_lambda_slack_check \
-      --output_dir /workspace/2_Delay_Aware_RLHF/results/rac_lambda_slack_sweep
+      --cache_dir .//results/rac_lambda_slack_check \
+      --output_dir .//results/rac_lambda_slack_sweep
 """
 from __future__ import annotations
 

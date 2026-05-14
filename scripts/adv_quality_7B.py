@@ -2,9 +2,8 @@
 
 Authoring metadata
 ------------------
-- Dispatch target: RunPod GPU A (H100 80GB; pod port 17321)
 - Skill citation: professional-rl-reviewer §static-quality-metric +
-  launch-runpod-h100-job §dispatch.
+  remote H100 launch.
 
 What this script does
 ---------------------
@@ -56,11 +55,11 @@ Implementation invariants
 - All RNG seeded: rng_seed=42 for delay sampling and head init.
 - No PPO; no LoRA; no gradient flow.
 
-Run example (GPU A; from /workspace/2_Delay_Aware_RLHF)
+Run example
 -------------------------------------------------------
   python -m scripts.adv_quality_7B \
       --n_prompts 500 \
-      --output_dir /workspace/2_Delay_Aware_RLHF/results/adv_quality_7B
+      --output_dir .//results/adv_quality_7B
 """
 from __future__ import annotations
 

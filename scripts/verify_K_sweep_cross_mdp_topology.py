@@ -1,7 +1,7 @@
 """ §4.5 cross-MDP-topology K-sweep replication driver.
 
-Pre-registered in `PREREG_T2_K_SWEEP_CROSS_MDP_TOPOLOGY.md` (commit 453363a,
-2026-04-26 23:08 IST). Implements the design verbatim — 5 hand-designed
+Pre-registered.md` (,
+). Implements the design verbatim — 5 hand-designed
 small-tabular MDP topologies x 7 K values x 5 MDP seeds x 3 MC seeds x 3000
 trajectories = 525 cells x 3000 trajectories each = 1.575M trajectories.
 
@@ -15,7 +15,7 @@ THE SCIENTIFIC QUESTION (addresses reviewer concern):
   small tabular MDP topologies (varying state-count, action-count,
   transition density, reward sparsity).
 
-Topology specifications (verbatim from PREREG sec 2.2):
+Topology specifications (verbatim from pre-registered script sec 2.2):
 
   T0 canonical_3s2a    : reuses V2.build_mdp(seed) verbatim
                          (3 states, 2 actions, dense softmax-of-Gaussian P,
@@ -32,7 +32,7 @@ Topology specifications (verbatim from PREREG sec 2.2):
                          r_slow concentrated on (s=0, a=0) attracting AWAY
                          from terminal
 
-K range and per-channel deltas (from PREREG sec 2.1, 2.4):
+K range and per-channel deltas (from pre-registered script sec 2.1, 2.4):
 
   K=2: anchor case. Uses V2.naive_pg_estimator + V2.rac_corrected_pg_estimator
        at delta_steps=20 (matches  /  47.9x headline at
@@ -43,20 +43,20 @@ K range and per-channel deltas (from PREREG sec 2.1, 2.4):
   K in {3,5,7,10,15,20}: per-channel decomposition r_true / K + zero-sum
        noise; deltas Delta_k = k for k=1..K-1; Delta_fast=0.
 
-PREREG branches (4-way mutually exclusive; FALSIFIED checked first):
+pre-registered script branches (4-way mutually exclusive; FALSIFIED checked first):
 
-  Branch 4 FALSIFIED-K-PEAK-NON-GENERALISED:
+  Branch 4 FAIL:
     ANY topology has peak_K in {2,3,5} OR
     ANY topology has min_K reduction <= 1.5 OR
     >=2 topologies have peak_band excluding all of {10,15,20}
 
-  Branch 1 ESTABLISHED-K-PEAK-CROSS-TOPOLOGY:
+  Branch 1 PASS:
     ALL 5 topologies have peak_band including K in {10,15,20} AND
     ALL 5 topologies have min_K reduction >= 5 AND
     >=4 of 5 topologies have peak_band including K=15 specifically AND
     ALL 5 topologies have max VIF-fast across K < 2.0
 
-  Branch 2 MODERATE-K-PEAK-ROBUST:
+  Branch 2 PARTIAL:
     >=3 of 5 topologies have peak_band including K=15 AND
     ALL 5 topologies have min_K reduction >= 3 AND
     NO topology has peak shifted LEFT to {2,3,5}
@@ -94,17 +94,17 @@ NEW logic (this script only):
   - Outer driver loops topology x K x mdp_seed x mc_seed
   - Per-(topology, K) summary: reduction_topology_mean/min/max,
     peak_K_topology, peak_band_topology
-  - Verdict logic verbatim from PREREG sec 4
+  - Verdict logic verbatim from pre-registered script sec 4
 
 Outputs:
-  results/track2_K_sweep_cross_mdp_topology/summary.json    # full sweep
-  results/track2_K_sweep_cross_mdp_topology/topology_<T>.json   # per-topology
-  results/figs/track2_K_sweep_cross_mdp_topology.png           # 4-panel figure
+  results/k_sweep_cross_mdp_topology/summary.json    # full sweep
+  results/k_sweep_cross_mdp_topology/topology_<T>.json   # per-topology
+  results/figs/k_sweep_cross_mdp_topology.png           # 4-panel figure
 
 Wall clock estimate (HONEST): per RAC delay test 945.4s for 75 cells x 15 reps x 3000
 trials at K=2 only. Here: 525 cells x 15 reps x 3000 trials but mostly
 K>=3 which has K-1 channel overhead per trajectory. Estimated 30 min - 3
-hr single-thread CPU; PREREG budgets up to 7 hr.
+hr single-thread CPU; pre-registered script budgets up to 7 hr.
 """
 from __future__ import annotations
 
@@ -155,7 +155,7 @@ from verify_tensor_lambda_multichannel_K10 import (  # noqa: E402
 
 
 # =============================================================================
-# Topology factories — PREREG sec 2.2
+# Topology factories — pre-registered script sec 2.2
 # =============================================================================
 
 
@@ -618,13 +618,13 @@ def aggregate_topology_K_curve(
 
 
 # =============================================================================
-# Verdict logic — verbatim from PREREG sec 4 (FALSIFIED checked first)
+# Verdict logic — verbatim from pre-registered script sec 4 (FALSIFIED checked first)
 # =============================================================================
 
 
 def evaluate_branches(per_topology: dict[str, dict[str, Any]],
                        K_grid: list[int]) -> dict[str, Any]:
-    """Apply PREREG sec 4 branch logic to the full 5-topology x 7-K matrix."""
+    """Apply pre-registered script sec 4 branch logic to the full 5-topology x 7-K matrix."""
     topologies = list(per_topology.keys())
     n_topologies = len(topologies)
 
@@ -640,7 +640,7 @@ def evaluate_branches(per_topology: dict[str, dict[str, Any]],
         for t in topologies
     }
 
-    # Branch 4 — FALSIFIED-K-PEAK-NON-GENERALISED (checked FIRST)
+    # Branch 4 — FAIL (checked FIRST)
     f4_peak_shift_left = any(peak_K_by_t[t] in {2, 3, 5} for t in topologies)
     f4_red_too_low = any(red_min_by_t[t] <= 1.5 for t in topologies)
     f4_peak_band_excludes_high = sum(
@@ -649,7 +649,7 @@ def evaluate_branches(per_topology: dict[str, dict[str, Any]],
     ) >= 2
     falsified = f4_peak_shift_left or f4_red_too_low or f4_peak_band_excludes_high
     if falsified:
-        verdict = "FALSIFIED-K-PEAK-NON-GENERALISED"
+        verdict = "FAIL"
         verdict_reason = []
         if f4_peak_shift_left:
             verdict_reason.append(
@@ -671,7 +671,7 @@ def evaluate_branches(per_topology: dict[str, dict[str, Any]],
             red_min_by_t, vif_max_by_t, topologies,
         )
 
-    # Branch 1 — ESTABLISHED-K-PEAK-CROSS-TOPOLOGY
+    # Branch 1 — PASS
     b1_all_high_peak = all(
         any(K in peak_band_by_t[t] for K in (10, 15, 20))
         for t in topologies
@@ -682,20 +682,20 @@ def evaluate_branches(per_topology: dict[str, dict[str, Any]],
     ) >= 4
     b1_all_vif_lt_2 = all(vif_max_by_t[t] < 2.0 for t in topologies)
     if b1_all_high_peak and b1_all_red_ge_5 and b1_at_least_4_have_K15 and b1_all_vif_lt_2:
-        verdict = "ESTABLISHED-K-PEAK-CROSS-TOPOLOGY"
+        verdict = "PASS"
         return _build_verdict_dict(
             verdict, ["all gates pass"],
             peak_K_by_t, peak_band_by_t, red_min_by_t, vif_max_by_t, topologies,
         )
 
-    # Branch 2 — MODERATE-K-PEAK-ROBUST
+    # Branch 2 — PARTIAL
     b2_at_least_3_have_K15 = sum(
         15 in peak_band_by_t[t] for t in topologies
     ) >= 3
     b2_all_red_ge_3 = all(red_min_by_t[t] >= 3.0 for t in topologies)
     b2_no_left_shift = not any(peak_K_by_t[t] in {2, 3, 5} for t in topologies)
     if b2_at_least_3_have_K15 and b2_all_red_ge_3 and b2_no_left_shift:
-        verdict = "MODERATE-K-PEAK-ROBUST"
+        verdict = "PARTIAL"
         return _build_verdict_dict(
             verdict,
             [f"K=15 in peak_band on {sum(15 in peak_band_by_t[t] for t in topologies)}/{n_topologies}"],
@@ -848,7 +848,7 @@ def make_figure(summary: dict[str, Any], output_path: Path) -> None:
         )
     summary_text += (
         f"\nWall: {summary['runtime_sec']:.1f}s\n"
-        f"PREREG SHA: {summary['prereg_sha']}\n"
+        f"pre-registered script SHA: {summary['prereg_sha']}\n"
     )
     ax.text(0.02, 0.98, summary_text, transform=ax.transAxes,
             verticalalignment="top", fontsize=8, family="monospace")
@@ -898,7 +898,7 @@ def parse_args(argv=None):
                    help="Smoke run: K_grid=[2,3,5], 1 mdp-seed, 1 mc-seed, "
                         "n_trials=100, 2 topologies. ~30s. Verdict NOT binding.")
     p.add_argument("--results-dir", type=Path,
-                   default=ROOT / "results" / "track2_K_sweep_cross_mdp_topology")
+                   default=ROOT / "results" / "k_sweep_cross_mdp_topology")
     p.add_argument("--figs-dir", type=Path, default=ROOT / "results" / "figs")
     return p.parse_args(argv)
 
@@ -991,7 +991,7 @@ def main(argv=None):
 
     # Verdict
     print("\n" + "=" * 96)
-    print("PREREG branch verdict")
+    print("pre-registered script branch verdict")
     print("=" * 96)
     verdict = evaluate_branches(per_topology, K_grid=args.K_grid)
     print(f"  VERDICT: {verdict['verdict']}")
@@ -1030,7 +1030,7 @@ def main(argv=None):
             smoke=args.smoke,
         ),
         prereg_sha="453363a",
-        prereg_file="PREREG_T2_K_SWEEP_CROSS_MDP_TOPOLOGY.md",
+        protocol_file="protocol.md",
         per_topology=per_topology,
         verdict=verdict,
         runtime_sec=time.time() - t0,
@@ -1040,7 +1040,7 @@ def main(argv=None):
     print(f"\nWrote {args.results_dir}/summary.json")
     print(f"Wrote {args.results_dir}/topology_*.json (n={len(args.topologies)})")
 
-    fig_path = args.figs_dir / "track2_K_sweep_cross_mdp_topology.png"
+    fig_path = args.figs_dir / "k_sweep_cross_mdp_topology.png"
     make_figure(summary, fig_path)
     print(f"Wrote {fig_path}")
     print(f"\nTotal runtime: {time.time() - t0:.1f}s")

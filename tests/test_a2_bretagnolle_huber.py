@@ -196,7 +196,7 @@ def test_json_artifact_has_expected_shape_if_present():
     """If the validation script has been run, its JSON must contain the
     key structural fields. Skip if not yet run (dev environments)."""
     import json
-    path = REPO / "results" / "track2_a2_bh" / "bh_validation.json"
+    path = REPO / "results" / "a2_bh" / "bh_validation.json"
     if not path.exists():
         pytest.skip("Validation JSON not yet written — run the script first")
     data = json.loads(path.read_text())

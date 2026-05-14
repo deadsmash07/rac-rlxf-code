@@ -2,10 +2,9 @@
 
 Authoring metadata
 ------------------
-- Dispatch target: RunPod GPU A (H100 80GB; pod port 17321; host 103.207.149.65)
 - Skill citation: professional-rl-reviewer §theorem-empirical-coherence +
   research-grade-code-audit-pre-launch (G1-G12 inline self-audit passed) +
-  launch-runpod-h100-job §dispatch.
+  remote H100 launch.
 
 What this script does
 ---------------------
@@ -48,15 +47,15 @@ results/rac_vtrace_identity_check/results.json with:
   - mean_abs_diff: float
   - l_inf: float (same as max_abs_diff, for reviewer convenience)
   - n: int (number of prompts used)
-  - verdict_class: 'ESTABLISHED-IDENTITY' if max_abs_diff < 1e-5 else 'FALSIFIED-IDENTITY'
+  - verdict_class: 'PASS' if max_abs_diff < 1e-5 else 'FAIL'
   - r_fast/r_slow array summary stats
   - first-10-step preview of A_rac and A_vtrace for human-eye inspection
 
-Run example (GPU A; from /workspace/2_Delay_Aware_RLHF)
+Run example
 -------------------------------------------------------
   python -m scripts.rac_vtrace_identity_kernel_check \
       --n_prompts 500 \
-      --output_dir /workspace/2_Delay_Aware_RLHF/results/rac_vtrace_identity_check
+      --output_dir .//results/rac_vtrace_identity_check
 """
 from __future__ import annotations
 
@@ -81,7 +80,7 @@ from transformers import (
 # Reuse the sister-script's loaders/scorers/head-init verbatim so the identity
 # test inherits exactly the same numerical pipeline that adv_quality_7B uses.
 # Both scripts live in scripts/ so a relative import works when run as a module
-# from /workspace/2_Delay_Aware_RLHF.
+# from ./.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from adv_quality_7B import (  # noqa: E402
     POLICY_MODEL_ID,
@@ -242,8 +241,8 @@ def main():
     passed = max_abs_diff < threshold
 
     verdict_class = (
-        "ESTABLISHED-IDENTITY-AT-LLM-SCALE" if passed
-        else "FALSIFIED-IDENTITY-AT-LLM-SCALE"
+        "PASS" if passed
+        else "FAIL"
     )
 
     print(f"[identity] max_abs_diff = {max_abs_diff:.3e}", flush=True)

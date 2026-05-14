@@ -30,8 +30,8 @@ Usage
 
 Outputs
 -------
-    results/track2_tensor_lambda_multichannel_K10/validation.json
-    results/figs/track2_tensor_lambda_multichannel_K10.png
+    results/tensor_lambda_multichannel_K10/validation.json
+    results/figs/tensor_lambda_multichannel_K10.png
 """
 from __future__ import annotations
 
@@ -489,7 +489,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--vif-gate-indep", type=float, default=1.5)
     p.add_argument(
         "--results-dir", type=Path,
-        default=ROOT / "results" / f"track2_tensor_lambda_multichannel_K{K_DEFAULT}",
+        default=ROOT / "results" / f"tensor_lambda_multichannel_K{K_DEFAULT}",
     )
     p.add_argument("--figs-dir", type=Path, default=ROOT / "results" / "figs")
     return p.parse_args(argv)
@@ -623,7 +623,7 @@ def main(argv: list[str] | None = None) -> int:
         json.dump(out, f, indent=2, default=V2._json_default)
     print(f"Wrote {json_path}")
 
-    fig_path = args.figs_dir / f"track2_tensor_lambda_multichannel_K{args.n_channels}.png"
+    fig_path = args.figs_dir / f"tensor_lambda_multichannel_K{args.n_channels}.png"
     make_figure(metrics, args.n_channels, fig_path)
     print(f"Wrote {fig_path}")
     print(f"Total runtime: {time.time() - t0:.1f}s")

@@ -132,7 +132,7 @@ class MultiChannelRACRewardManager(AbstractRewardManager):
     slow channels for asynchronous completion, and calls the RAC hook when
     their rewards arrive on subsequent optimizer steps.
 
-    IMPORTANT (verified on H100, see memory/track2_verl_integration_verified.md):
+    IMPORTANT (verified on H100, see internal design notes):
     verl's trainer consumes advantages IMMEDIATELY within the call that
     produces them — there is no "update past advantage" path. Our RAC
     correction δ therefore does NOT retroactively modify a consumed advantage;
