@@ -33,11 +33,9 @@ def load_latest_results(adv_results_root: Path) -> dict:
 
 
 def main() -> int:
+    import os
     set_pub_style()
-    t2_root = Path(
-        "/Users/arnav/Documents/research/nw/IMPLEMENTATION/"
-        "2_Delay_Aware_RLHF/results"
-    )
+    t2_root = Path(os.environ.get("RAC_RESULTS_DIR", "results"))
     data = load_latest_results(t2_root)
 
     sizes = list(data["results"].keys())

@@ -37,7 +37,9 @@ plt.rcParams.update({
     "savefig.bbox":     "tight",
 })
 
-with open("/Users/arnav/Documents/research/nw/IMPLEMENTATION/2_Delay_Aware_RLHF/results/adv_quality_7B/results.json") as f:
+import os
+_results_dir = os.environ.get("RAC_RESULTS_DIR", "results")
+with open(os.path.join(_results_dir, "adv_quality_7B", "results.json")) as f:
     data = json.load(f)
 per_channel = data["per_channel"]
 
@@ -87,23 +89,24 @@ ax.axhline(0, color=WONG["grey"], linewidth=0.4)
 ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=7)
 ax.set_ylabel("Cosine similarity to $A_{\\mathrm{sync}}$")
-ax.set_title("B. Cosine alignment with oracle", pad=8)
+ax.set_title("B. Cosine alignment with oracle", pad=10)
 ymin = min(min(cos_ctrl), 0) - 0.10
-ymax = max(max(cos_rac), 0)  + 0.18
+ymax = max(max(cos_rac), 0)  + 0.32
 ax.set_ylim(ymin, ymax)
 ax.yaxis.set_label_coords(-0.13, 0.5)
-# Legend OUTSIDE the bar area, centered above the panel.
+# Legend INSIDE the panel, just below the title and above the bars.
 ax.legend(
     loc="upper center",
-    bbox_to_anchor=(0.5, 1.18),
+    bbox_to_anchor=(0.5, 0.99),
     ncol=2,
     frameon=False,
     columnspacing=1.5,
+    fontsize=7,
 )
 
-fig.subplots_adjust(wspace=0.32, top=0.82)
+fig.subplots_adjust(wspace=0.32, top=0.88)
 fig.savefig(
-    "/Users/arnav/Documents/research/nw/IMPLEMENTATION/3_PILSD_Standalone/paper/workshop_T2_RLxF/figures/adv_quality_7B.pdf",
+    os.environ.get("RAC_FIGURES_DIR", "figures") + "/adv_quality_7B.pdf",
     format="pdf", bbox_inches="tight", pad_inches=0.04,
 )
 plt.close(fig)

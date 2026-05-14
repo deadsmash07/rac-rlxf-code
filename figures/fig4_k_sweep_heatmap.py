@@ -35,10 +35,13 @@ from matplotlib.patches import Rectangle
 from _figstyle import WONG, set_pub_style, save_fig, here
 
 
-# Source-data root: T2 cross-MDP-topology K-sweep aggregate jsons.
-DATA_ROOT = (
-    "/Users/arnav/Documents/research/nw/IMPLEMENTATION/"
-    "2_Delay_Aware_RLHF/results/track2_K_sweep_cross_mdp_topology"
+import os
+
+# Source-data root: cross-MDP-topology K-sweep aggregate jsons.
+# Override via RAC_RESULTS_DIR env var; default is the in-repo results dir.
+DATA_ROOT = os.environ.get(
+    "RAC_RESULTS_DIR",
+    "results/track2_K_sweep_cross_mdp_topology",
 )
 
 # Ordered (display-label, json-filename) pairs.  Display labels
