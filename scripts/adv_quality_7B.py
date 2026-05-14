@@ -2,8 +2,6 @@
 
 Authoring metadata
 ------------------
-- Author: iter+N+RLxF-resume-21 SCRIPT-author (Opus 4.7 1M-context, MAX 4D)
-- Iteration: iter+N+RLxF-resume-21
 - Dispatch target: RunPod GPU A (H100 80GB; pod port 17321)
 - Skill citation: professional-rl-reviewer §static-quality-metric +
   launch-runpod-h100-job §dispatch.
@@ -19,7 +17,7 @@ the uncorrected delayed-fast control. Steps:
 2. Score each (prompt, response) pair with both reward models:
    - r_fast: Qwen2.5-7B-Instruct backbone + ad-hoc Linear(hidden, 1) head with
      fixed seed=42 (mirrors the TwoChannelRewardModule fast-RM construction
-     from F_T2v2 for reproducibility; head is RANDOM-init, frozen).
+     from prior fast-RM construction for reproducibility; head is RANDOM-init, frozen).
    - r_slow: Skywork-Reward-Llama-3.1-8B-v0.2 native scalar head (the "oracle").
 3. For each delay channel (deterministic Δ=5, lognormal μ=1.5 σ=0.8, pareto α=2.5):
      - sample one delay per step (n=500)

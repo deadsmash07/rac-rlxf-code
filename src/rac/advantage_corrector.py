@@ -183,7 +183,7 @@ def apply_rac_correction(
         if log_pi_target_tensor is None:
             log_pi_target_tensor = log_pi_target.batch.get("log_probs")
 
-        # F-3 FIX (Codex audit a7fe2aff195af0838): use uid->row-index dict from
+        # F-3 FIX (audit): use uid->row-index dict from
         # `cached.uids` instead of positional enumerate over `group`. When some
         # requested uids are missing from the cache, `cached.uids` is a subset
         # and positional alignment between `group` and `cached.*` is wrong —

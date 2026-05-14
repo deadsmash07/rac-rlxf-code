@@ -23,7 +23,7 @@ stub that returns deterministic log-probs).
 
 References:
   - src/verl_integration_notes.md §4 (concrete integration plan)
-  - memory/track2_verl_integration_verified.md (subagent-verified design)
+  - internal design notes
   - team2_appendix_A2_proof_sketch.md (theoretical bias bound this tests)
 """
 from __future__ import annotations

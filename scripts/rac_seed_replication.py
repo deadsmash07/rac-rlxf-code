@@ -2,8 +2,7 @@
 
 Authoring metadata
 ------------------
-- Author: iter+N+RLxF-resume-30 SCRIPT-author (Opus 4.7 1M-context, MAX 4D)
-- Iteration: iter+N+RLxF-resume-30 (seed-robustness replication)
+- Iteration:  (seed-robustness replication)
 - Dispatch target: RunPod GPU A (H100 80GB; pod port 17321; host 103.207.149.65)
 - Skill citation: professional-rl-reviewer Section replication-robustness +
   launch-runpod-h100-job Section dispatch.
@@ -11,8 +10,7 @@ Authoring metadata
 What this script does
 ---------------------
 Confirms that the existing seed=42 verdicts replicate at additional head seeds
-{43, 44, 45}, satisfying the reviewer attack "your identity / slack results
-are an artifact of the random head seed".
+{43, 44, 45}, extending the seed coverage.
 
 Both identities under test are algebraic (Theorem 1 special case at Lambda=I;
 linear slack at constant Lambda<1), so the head seed should be irrelevant once

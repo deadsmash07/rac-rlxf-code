@@ -1,4 +1,4 @@
-"""Aggregate K-channel sweep (K ∈ {3, 5, 7, 10}) into one table (iter+N+169).
+"""Aggregate K-channel sweep (K ∈ {3, 5, 7, 10}) into one table ().
 
 Reads the per-K `validation.json` outputs from
 `results/track2_tensor_lambda_multichannel{,_K5,_K7,_K10}/` and emits:

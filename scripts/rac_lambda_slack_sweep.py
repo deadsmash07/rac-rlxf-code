@@ -2,8 +2,6 @@
 
 Authoring metadata
 ------------------
-- Author: iter+N+RLxF-resume-29 SCRIPT-author (Opus 4.7 1M-context, MAX 4D)
-- Iteration: iter+N+RLxF-resume-29
 - Dispatch target: RunPod GPU A (H100; pod port 17321; host 103.207.149.65)
 - Skill citation: professional-rl-reviewer Section theorem-tightness +
   launch-runpod-h100-job Section dispatch.

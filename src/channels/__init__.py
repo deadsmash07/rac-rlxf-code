@@ -12,10 +12,8 @@ from .registry import (
     build_channel_from_config,
 )
 from .code_exec import CodeExecChannel
-from .livecodebench_judge import LiveCodeBenchJudgeChannel
 from .mock_channels import MockSyncChannel, MockAsyncChannel
 from .gsm8k_channels import GSM8KFastChannel, GSM8KDelayedChannel
-from .pilsd_reward_channels import PILSDFastChannel, PILSDDelayedChannel
 
 __all__ = [
     "register_channel",
@@ -23,11 +21,8 @@ __all__ = [
     "list_registered",
     "build_channel_from_config",
     "CodeExecChannel",
-    "LiveCodeBenchJudgeChannel",
     "MockSyncChannel",
     "MockAsyncChannel",
     "GSM8KFastChannel",
     "GSM8KDelayedChannel",
-    "PILSDFastChannel",
-    "PILSDDelayedChannel",
 ]

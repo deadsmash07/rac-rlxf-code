@@ -1,24 +1,24 @@
-"""F-T2 (iter+N+312): Heavy-tailed delay-distribution stress test for RAC.
+"""RAC delay test: Heavy-tailed delay-distribution stress test for RAC.
 
 Pre-registered in `PREREG_FT2_HEAVY_TAIL_DELAY.md` (commit 1b1591a, 2026-04-26
 04:36 IST). Implements the design verbatim — 5 delay distributions matched at
 E[Delta]=20, 5 MDP seeds x 3 MC seeds x 5 distributions x 3 tau_age x 1000 trials
 = 75 cells x 3000 trajectories each.
 
-The SCIENTIFIC question (closes a reviewer attack):
+Scientific question:
 
   All existing T2 RAC validators use a SINGLE deterministic delay Delta per cell.
   In production async RLHF, slow-RM evaluation latency is STOCHASTIC and often
   HEAVY-TAILED (queue contention, batch jitter, GPU evictions). Does the K=2
   bias-reduction (47.9x at deterministic Delta=20, 9.4x at deterministic
-  Delta=20 with tau_age=200 per iter+N+197 table) survive when Delta is drawn
+  Delta=20 with tau_age=200 per  table) survive when Delta is drawn
   per-trajectory from increasingly heavy-tailed distributions?
 
 The 5 distributions, all matched to E[Delta]=20 so any divergence isolates TAIL
 SHAPE, not mean (truncation tail mass shifts the realised mean for cauchy_trunc;
 this is reported and disclosed):
 
-  deterministic: Delta == 20 (control / reproduces iter+N+197 Delta=20 anchor)
+  deterministic: Delta == 20 (control / reproduces  Delta=20 anchor)
   gaussian:      clip(Round(N(20, 6^2)), 1, 200)        — thin-tail symmetric
   lognormal:     clip(Round(LogNormal(mu, 0.5)), 1, 200)
                  with mu = ln(20) - 0.5^2/2  (gives E[X] = 20)  — service-time classic
@@ -64,7 +64,7 @@ from typing import Any, Callable
 
 import numpy as np
 
-# Reuse iter+N+15 / iter+N+197 infrastructure verbatim.
+# Reuse  /  infrastructure verbatim.
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -186,7 +186,7 @@ def run_rac_per_trajectory(
 
 
 def summarize(g_naive, g_rac, g_oracle, g_true) -> dict[str, float]:
-    """Bias / variance / reduction / VIF — same metric set as iter+N+197."""
+    """Bias / variance / reduction / VIF — same metric set as """
     mean_naive = g_naive.mean(axis=0)
     mean_rac = g_rac.mean(axis=0)
     mean_oracle = g_oracle.mean(axis=0)
@@ -510,7 +510,7 @@ def make_figure(summary: dict[str, Any], distributions: list[str],
     ax.grid(alpha=0.25, which='both')
 
     fig.suptitle(
-        "F-T2 (iter+N+312) - heavy-tail delay-distribution stress test "
+        "RAC delay test () - heavy-tail delay-distribution stress test "
         "(5 distributions x matched E[Delta]=20 x 3 tau_age x 5 MDP x 3 MC seeds)",
         fontsize=10,
     )
@@ -552,7 +552,7 @@ def main(argv=None):
     args.figs_dir.mkdir(parents=True, exist_ok=True)
 
     print("=" * 88)
-    print("F-T2 (iter+N+312) - Heavy-tail delay-distribution stress test for RAC")
+    print("RAC delay test () - Heavy-tail delay-distribution stress test for RAC")
     print("=" * 88)
     print(f"Distributions = {args.distributions}")
     print(f"tau_age grid  = {args.tau_grid}")

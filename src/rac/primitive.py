@@ -58,12 +58,12 @@ def apply_rac(
     # δ_i = α · (r_slow − m̂_t(r_fast))  (control-variate form)
     delta = alpha_delta * (slow_reward - fast_reward_mean)
 
-    # F-4 FIX (Codex audit a7fe2aff195af0838): use V-trace 1-sided clip from
+    # F-4 FIX (audit): use V-trace 1-sided clip from
     # `importance_sampling.clipped_is_ratio` to match paper Eq (1) and stay
     # consistent with `advantage_corrector.compute_rac_delta`. The previous
     # 2-sided PPO-style clamp `[1-eps, 1+eps]` was inconsistent with the
     # paper's IS semantics and with `clipped_is_ratio` itself (V-trace 1-sided
-    # after iter+N+RLxF-resume-12).
+    # after ).
     rho_clip = clipped_is_ratio(
         log_pi_current, log_pi_behavior, epsilon=is_clip,
     )

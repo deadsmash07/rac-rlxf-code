@@ -1,13 +1,13 @@
-"""iter+N+316 §4.5 cross-MDP-topology K-sweep replication driver.
+""" §4.5 cross-MDP-topology K-sweep replication driver.
 
 Pre-registered in `PREREG_T2_K_SWEEP_CROSS_MDP_TOPOLOGY.md` (commit 453363a,
 2026-04-26 23:08 IST). Implements the design verbatim — 5 hand-designed
 small-tabular MDP topologies x 7 K values x 5 MDP seeds x 3 MC seeds x 3000
 trajectories = 525 cells x 3000 trajectories each = 1.575M trajectories.
 
-THE SCIENTIFIC QUESTION (closes 2nd-of-3 reviewer K-peak attacks):
+THE SCIENTIFIC QUESTION (addresses reviewer concern):
 
-  iter+N+170/185/186 K-sweep on a SINGLE 3-state x 2-action MDP gives
+  /185/186 K-sweep on a SINGLE 3-state x 2-action MDP gives
   reduction-factor curve K in {2,3,5,7,10,15,20} -> {47.9, 22.65, 32.95,
   39.8, 48.3, 57.48 (PEAK), 54.83 (plateau)}. Reviewer attack: "K=15 peak
   is MDP-specific not algorithmic". This driver tests whether the K-curve
@@ -35,7 +35,7 @@ Topology specifications (verbatim from PREREG sec 2.2):
 K range and per-channel deltas (from PREREG sec 2.1, 2.4):
 
   K=2: anchor case. Uses V2.naive_pg_estimator + V2.rac_corrected_pg_estimator
-       at delta_steps=20 (matches iter+N+15 / iter+N+197 47.9x headline at
+       at delta_steps=20 (matches  /  47.9x headline at
        tau_age=200 if we wanted to hit it; here we hold tau_age=1000 to
        match the K>=3 RAC config and isolate the correction-magnitude math).
        2-channel decomposition: (r_fast, r_slow) verbatim per topology.
@@ -101,7 +101,7 @@ Outputs:
   results/track2_K_sweep_cross_mdp_topology/topology_<T>.json   # per-topology
   results/figs/track2_K_sweep_cross_mdp_topology.png           # 4-panel figure
 
-Wall clock estimate (HONEST): per F-T2 945.4s for 75 cells x 15 reps x 3000
+Wall clock estimate (HONEST): per RAC delay test 945.4s for 75 cells x 15 reps x 3000
 trials at K=2 only. Here: 525 cells x 15 reps x 3000 trials but mostly
 K>=3 which has K-1 channel overhead per trajectory. Estimated 30 min - 3
 hr single-thread CPU; PREREG budgets up to 7 hr.
@@ -121,7 +121,7 @@ from typing import Any, Callable
 import numpy as np
 import torch
 
-# Reuse iter+N+15/170/185/186 infrastructure verbatim.
+# Reuse /170/185/186 infrastructure verbatim.
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -162,7 +162,7 @@ from verify_tensor_lambda_multichannel_K10 import (  # noqa: E402
 def build_mdp_canonical_3s2a(seed: int = 1337) -> TabularMDP:
     """T0: canonical 3-state x 2-action — reuses V2.build_mdp verbatim.
 
-    This is the iter+N+15 / iter+N+170 / iter+N+185 reference topology.
+    This is the  /  /  reference topology.
     Reproduces the K-sweep peak-at-K=15 finding when run as the only
     topology in the sweep.
     """
@@ -355,7 +355,7 @@ def run_K2_cell(
 ) -> dict[str, float]:
     """Reduction-factor cell for K=2 (anchor) using V2 machinery.
 
-    This is verbatim the iter+N+15 K=2 protocol: naive PG with G_fast only
+    This is verbatim the  K=2 protocol: naive PG with G_fast only
     vs RAC-corrected PG with the slow-channel matured at delta_steps. Returns
     bias_naive, bias_rac, reduction_factor, vif. Pooled across `n_trials`
     trajectories (single seed; outer driver pools across mc_seeds).
@@ -798,7 +798,7 @@ def make_figure(summary: dict[str, Any], output_path: Path) -> None:
                 f"K={peak_K}\nband={peak_band}",
                 ha="center", va="bottom", fontsize=7)
     ax.axhline(15.0, color="black", linestyle="--", lw=0.7,
-               label="canonical iter+N+185 peak (K=15)")
+               label="canonical  peak (K=15)")
     ax.set_ylabel("argmax-K reduction-factor")
     ax.set_xticklabels(topologies, rotation=20, ha="right", fontsize=8)
     ax.set_title("Panel B — peak-K location per topology")
@@ -854,7 +854,7 @@ def make_figure(summary: dict[str, Any], output_path: Path) -> None:
             verticalalignment="top", fontsize=8, family="monospace")
 
     fig.suptitle(
-        "iter+N+316 §4.5 cross-MDP-topology K-sweep replication "
+        " §4.5 cross-MDP-topology K-sweep replication "
         f"({len(topologies)} topologies x {len(K_grid)} K-values x "
         f"{summary['config']['n_trials']} trials)",
         fontsize=11,
@@ -886,7 +886,7 @@ def parse_args(argv=None):
     p.add_argument("--trajectory-len", type=int, default=50)
     p.add_argument("--theta-seed", type=int, default=7)
     p.add_argument("--delta-K2", type=int, default=20,
-                   help="K=2 anchor delay (matches iter+N+15 / iter+N+197 47.9x).")
+                   help="K=2 anchor delay (matches  /  47.9x).")
     p.add_argument("--tau-age", type=float, default=1000.0)
     p.add_argument("--is-clip", type=float, default=1.0)
     p.add_argument("--alpha-delta", type=float, default=1.0)
@@ -926,7 +926,7 @@ def main(argv=None):
     )
 
     print("=" * 96)
-    print("iter+N+316 §4.5 cross-MDP-topology K-sweep replication")
+    print(" §4.5 cross-MDP-topology K-sweep replication")
     print("=" * 96)
     print(f"Topologies     = {args.topologies}")
     print(f"K-grid         = {args.K_grid}")

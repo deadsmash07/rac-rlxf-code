@@ -1,4 +1,4 @@
-"""iter+N+329 parallelization-orchestrator wrapper for cross-MDP-topology K-sweep.
+""" parallelization-orchestrator wrapper for cross-MDP-topology K-sweep.
 
 This driver is a THIN ORCHESTRATOR around `verify_K_sweep_cross_mdp_topology.py`.
 It does NOT modify the PREREG-faithful SCRIPT (`c835029`). It only changes
@@ -20,9 +20,9 @@ PREREG-faithfulness:
 
 Why this is needed:
   - PREREG §6 self-flagged that K∈{15,20} cells have hostile per-trajectory cost
-    that the sequential ETA (7.4 min) underestimated by ~50×. iter+N+321 #2
+    that the sequential ETA (7.4 min) underestimated by ~50×.  #2
     KILL hit the 5h gate at 0/5 topologies. Empirical re-test in this iteration
-    (iter+N+329) confirms K=20 single (topo, mdp) cell at 3000 trials × 3 mc =
+    () confirms K=20 single (topo, mdp) cell at 3000 trials × 3 mc =
     ~23 min wall on local CPU. Sequential total = ~21h. PREREG 5h gate cannot
     be satisfied without parallelism.
   - B200 GPU does NOT accelerate this pure-NumPy code (no torch tensors used
@@ -42,7 +42,7 @@ Honest disclosures (added EX-ANTE before this driver runs at scale):
      a cell exceeds this its result is marked TIMEOUT and the master verdict
      handles partial coverage.
 
-Author: iter+N+329 T2 K-sweep RIDE subagent (Opus 4.7 1M MAX 4D effort)
+Author:  T2 K-sweep RIDE subagent 
 """
 from __future__ import annotations
 
@@ -58,7 +58,7 @@ from typing import Any
 
 import numpy as np
 
-# Reuse iter+N+316 SCRIPT verbatim (no modification).
+# Reuse  SCRIPT verbatim (no modification).
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -271,7 +271,7 @@ def main(argv=None):
     args.figs_dir.mkdir(parents=True, exist_ok=True)
 
     print("=" * 96)
-    print("iter+N+329 cross-MDP-topology K-sweep RIDE (parallel orchestrator)")
+    print(" cross-MDP-topology K-sweep RIDE (parallel orchestrator)")
     print("=" * 96)
     print(f"Topologies     = {args.topologies}")
     print(f"K-grid         = {args.K_grid}")
@@ -357,7 +357,7 @@ def main(argv=None):
             verdict_reasons=[
                 f"5h gate fired at {elapsed_total:.1f}s "
                 f"(PREREG 5h={args.max_wall_sec}s); first KILL was 2026-04-27 "
-                "iter+N+321 #2 commit 5d5d93d at 5h01m elapsed.",
+                " #2 commit 5d5d93d at 5h01m elapsed.",
                 f"Cells completed: {len(cell_walls)} of {n_outer} "
                 f"(topology x mdp_seed). Insufficient for cross-topology "
                 "generalization claim per PREREG sec 4.",
@@ -451,7 +451,7 @@ def main(argv=None):
         runtime_sec=elapsed_total,
         cell_walls_sec=cell_walls,
         n_workers=args.n_workers,
-        parallel_orchestrator="iter+N+329 run_K_sweep_parallel_resume.py",
+        parallel_orchestrator=" run_K_sweep_parallel_resume.py",
     )
     with open(args.results_dir / "summary.json", "w") as f:
         json.dump(summary, f, indent=2, default=_json_default)

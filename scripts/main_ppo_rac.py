@@ -24,7 +24,7 @@ Usage (smoke / dry-run):
 References:
     - verl/trainer/main_ppo.py:29, 376  (trainer import + instantiation sites)
     - src/trainer/patched_ray_trainer.py  (our subclass)
-    - memory/track2_patched_ray_trainer_shipped.md
+    - internal design notes
 """
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ import os
 import sys
 from pathlib import Path
 
-# Blocker #25 fix (resolved 2026-04-18 iter+N+27): vLLM 0.8.5's
+# Blocker #25 fix (resolved 2026-04-18 ): vLLM 0.8.5's
 # `vllm_async_server.vLLMHttpServer.launch_server()` instantiates a V1
 # AsyncLLMEngine but reads envs.VLLM_USE_V1 — which is False by default.
 # Setting it here (co-located with the PatchedRayPPOTrainer monkey-patch)
@@ -55,10 +55,10 @@ def _patch_verl_sleep_replicas() -> None:
     rollouts.
 
     Escape hatch:
-        PILSD_DISABLE_VERL_SLEEP=0  → keep upstream behavior (will crash at
+        RAC_DISABLE_VERL_SLEEP=0  → keep upstream behavior (will crash at
         step ~3 on vllm 0.8.5 under current verl HEAD).
     """
-    if os.environ.get("PILSD_DISABLE_VERL_SLEEP", "1") != "1":
+    if os.environ.get("RAC_DISABLE_VERL_SLEEP", "1") != "1":
         return
     try:
         from verl.checkpoint_engine import base as _ckpt_base
@@ -75,7 +75,7 @@ def _patch_verl_sleep_replicas() -> None:
     )
     _ckpt_base.CheckpointEngineManager.sleep_replicas = _noop_sleep_replicas
     print("[rac-ppo] Patched verl.checkpoint_engine sleep_replicas → no-op "
-          "(PILSD_DISABLE_VERL_SLEEP=1)")
+          "(RAC_DISABLE_VERL_SLEEP=1)")
 
 
 # Ensure our package is on the path so `from src.trainer...` resolves

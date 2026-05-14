@@ -2,8 +2,6 @@
 
 Authoring metadata
 ------------------
-- Author: iter+N+RLxF-resume-26 SCRIPT-author (Opus 4.7 1M-context, MAX 4D)
-- Iteration: iter+N+RLxF-resume-26
 - Dispatch target: RunPod GPU A (H100 80GB; pod port 17321; host 103.207.149.65)
 - Skill citation: professional-rl-reviewer §theorem-empirical-coherence +
   research-grade-code-audit-pre-launch (G1-G12 inline self-audit passed) +
@@ -36,7 +34,7 @@ actor), both estimators should be exactly equal on every step:
 
 So A_rac - A_vtrace == 0 exactly in arithmetic. In float64 we expect
 max-abs-difference at the ulp floor (<1e-12); even in float32 we expect
-<1e-5. The threshold for PASS is <1e-5 per the iter+N+RLxF-resume-26 spec.
+<1e-5. The threshold for PASS is <1e-5 per the  spec.
 
 The two paths are computed via INDEPENDENT code (no copy-paste between them):
   - A_vtrace via direct vectorized r_slow - baseline

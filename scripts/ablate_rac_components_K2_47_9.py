@@ -8,7 +8,7 @@ the RAC correction formula
 so the closed-form K=2 row of Tab 1 in
 `paper/workshop_T2_RLxF/rlxf_T2_iter1_ICML2026.tex`
 gains a small ablation block isolating which knob carries the bias-
-reduction. Audit: iter+N+367_RLxF_Nanda_audit_1209_IST.md sec B2.
+reduction. Audit:  sec B2.
 
 The 47.9x reproduction uses:
 
