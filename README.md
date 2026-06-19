@@ -1,8 +1,14 @@
 # Retroactive Advantage Correction (RAC)
 
-This repository contains the implementation and reproduction scripts for the
-RAC paper submitted to the ICML 2026 Workshop on Reinforcement Learning from
-World Feedback (RLxF). RAC is a forward-injection primitive for delay-aware
+![RAC: a reward that arrives Δ steps late still belongs to the rollout that earned it. RAC queues each pending slow reward, ages it through a decay kernel, and reinjects it as a clipped residual into the optimizer step where it lands.](assets/rac_poster.png)
+
+Code for **"Retroactive Advantage Correction: Closed-Form V-Trace Bias
+Correction for Delay-Aware RLHF"**, accepted at the **ICML 2026 Workshop on
+Reinforcement Learning from World Feedback (RLxF)**.
+
+**▶ [Interactive explainer, with diagrams](https://deadsmash07.github.io/rac-rlxf-code/)** — a visual walkthrough of where a reward signal gets stuck Δ optimizer steps behind the gradient that should consume it, and how RAC sends it forward. (Also viewable locally: open `docs/index.html`.)
+
+RAC is a forward-injection primitive for delay-aware
 RLHF: each slow reward that arrives late is queued, aged through a non-negative
 kernel, and reinjected as an additive correction into the next optimiser
 step's advantage.
@@ -55,6 +61,22 @@ pip install -r requirements.txt
 ```
 
 Listed dependencies are pinned where reproducibility requires it.
+
+## Experimental setup at a glance
+
+| | Tabular MDP benchmark | 7B/8B reward-distribution probe |
+|---|---|---|
+| **Purpose** | closed-form policy bias vs. a known optimum | check RAC's core algebra on real reward signals |
+| **Delay Δ** | optimizer steps: {1,…,5} (headline), {5,20,50}, up to {100,200} | per-step samples — deterministic Δ=5, lognormal, Pareto |
+| **Rollout** | 3-state × 2-action MDP, 1000 trials/seed | N=500 UltraFeedback prompts, ≤128 response tokens, no PPO loop |
+| **Reward channels** | synthetic: fast = truth + 𝒩(0, σ_f²), σ_f=0.5; slow = truth, delayed | fast = Qwen2.5-7B head; slow oracle = Skywork-Reward-Llama-3.1-8B; policy = Llama-3-8B |
+| **How Δ is simulated** | FIFO buffer: a score computed at step *t* pops out and is reinjected at *t+Δ* | sample a delay per step, then forward-inject the residual RAC would add at *t+Δ* |
+
+Δ is always measured in **optimizer (gradient) steps** — the number of steps a
+slow reward is in flight before it returns, not wall-clock. The age kernel is
+`w_age(Δ) = exp(−Δ/τ_age)`. The 7B probe is a static algebraic check (identity
+actor `ρ_clip = 1`), not a training-speedup measurement; end-to-end LLM-scale
+PPO training is stated as future work.
 
 ## Reproducing each paper claim
 
@@ -220,6 +242,19 @@ smoke test through the reward-manager patch.
 - The PPO integration is implemented against the VERL/HybridFlow reward
   manager interface; the same two-line patch should apply to any
   reward-manager that exposes the standard PPO/GRPO call signature.
+
+## Citation
+
+```bibtex
+@inproceedings{raj2026rac,
+  title     = {Retroactive Advantage Correction: Closed-Form {V-Trace}
+               Bias Correction for Delay-Aware {RLHF}},
+  author    = {Raj, Arnav},
+  booktitle = {ICML 2026 Workshop on Reinforcement Learning from
+               World Feedback (RLxF)},
+  year      = {2026}
+}
+```
 
 ## License
 

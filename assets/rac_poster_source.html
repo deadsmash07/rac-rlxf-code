@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#121A26;--muted:#5B6675;--navy:#0E1A2B;--navy2:#16263C;--panel:#fff;--surface:#EAEFF4;
+  --fast:#1E7FC2;--slow:#E69500;--bias:#D2552B;--exact:#149173;--hair:#D2DCE6;
+  --d:'Space Grotesk',sans-serif;--b:'Inter',sans-serif;--m:'IBM Plex Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1840px;font-family:var(--b);background:var(--surface)}
+.poster{width:1840px;padding:0}
+/* title band */
+.band{background:var(--navy);color:#fff;padding:34px 48px 30px;display:flex;justify-content:space-between;align-items:flex-end}
+.band .eye{font-family:var(--m);font-size:16px;letter-spacing:.16em;text-transform:uppercase;color:#7FA8CC}
+.band h1{font-family:var(--d);font-weight:700;font-size:40px;letter-spacing:-.02em;margin-top:10px;line-height:1.08}
+.band h1 em{font-style:normal;color:var(--slow)}
+.band .right{text-align:right;font-family:var(--m);font-size:15px;color:#9DB4CB;line-height:1.7}
+.band .right b{color:#fff}
+/* body grid */
+.body{padding:34px 48px 40px;display:grid;grid-template-columns:1.35fr 1fr;gap:34px}
+.lead{font-size:21px;color:var(--ink);line-height:1.5;grid-column:1 / -1;margin-bottom:6px}
+.lead b{color:var(--navy)}
+/* pipeline panel */
+.panel{background:var(--panel);border:1px solid var(--hair);border-radius:16px;padding:26px 26px 18px}
+.panel h2{font-family:var(--d);font-size:17px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.eqn{font-family:var(--m);background:var(--navy);color:#EAF1F8;border-radius:12px;padding:18px 20px;font-size:18px;line-height:2;margin-top:8px}
+.eqn .s{color:var(--slow)}.eqn .f{color:#6FB7E8}.eqn .e{color:#54C6A6}.eqn .c{color:#7C93AB}
+/* stat badges */
+.badges{display:flex;flex-direction:column;gap:16px}
+.badge{display:flex;align-items:center;gap:18px;border-radius:14px;padding:18px 22px;color:#fff}
+.badge .big{font-family:var(--d);font-weight:700;font-size:34px;letter-spacing:-.02em;white-space:nowrap}
+.badge .sm{font-size:15px;line-height:1.35;opacity:.95}
+.b1{background:var(--slow)}.b2{background:var(--exact)}.b3{background:var(--fast)}
+.legend{grid-column:1 / -1;display:flex;gap:30px;font-family:var(--m);font-size:15px;color:var(--ink);margin-top:4px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle;margin-right:8px}
+svg{display:block;width:100%;height:auto}
+</style></head>
+<body><div class="poster">
+
+  <div class="band">
+    <div>
+      <div class="eye">RLxF Workshop · ICML 2026 · Delay-Aware RLHF</div>
+      <h1>Retroactive Advantage Correction&nbsp;&nbsp;<em>(RAC)</em><br>A reward that arrives Δ steps late still belongs to the rollout that earned it.</h1>
+    </div>
+    <div class="right"><b>Arnav Raj</b><br>IIT Delhi<br>github.com/deadsmash07/rac-rlxf-code</div>
+  </div>
+
+  <div class="body">
+    <div class="lead">Slow reward channels — code verifiers, judge ensembles, human review — return several gradient steps after the rollout that earned them. RAC <b>queues each pending reward, ages it, and reinjects it as a clipped residual</b> into the optimizer step where it lands. Closed-form, no reward-model retraining, a two-line patch on PPO or GRPO.</div>
+
+    <!-- left: the timeline + mechanism -->
+    <div class="panel">
+      <h2>The mechanism, on the optimizer-step timeline</h2>
+      <svg viewBox="0 0 1000 250" role="img">
+        <line x1="60" y1="160" x2="950" y2="160" stroke="#C2CFDB" stroke-width="2"/>
+        <g text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" fill="#5B6675">
+          <text x="60" y="188">t</text><text x="245" y="188">t+1</text><text x="430" y="188">t+2</text>
+          <text x="615" y="188">t+3</text><text x="800" y="188">t+4</text><text x="930" y="188">t+Δ</text>
+        </g>
+        <g stroke="#C2CFDB" stroke-width="2">
+          <line x1="60" y1="154" x2="60" y2="166"/><line x1="245" y1="154" x2="245" y2="166"/><line x1="430" y1="154" x2="430" y2="166"/>
+          <line x1="615" y1="154" x2="615" y2="166"/><line x1="800" y1="154" x2="800" y2="166"/><line x1="930" y1="154" x2="930" y2="166"/>
+        </g>
+        <rect x="22" y="104" width="76" height="34" rx="7" fill="#fff" stroke="#D2DCE6"/>
+        <text x="60" y="126" text-anchor="middle" font-family="Inter" font-size="13" fill="#121A26">rollout</text>
+        <line x1="60" y1="104" x2="60" y2="70" stroke="#1E7FC2" stroke-width="3"/>
+        <circle cx="60" cy="64" r="8" fill="#1E7FC2"/>
+        <text x="60" y="46" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1E7FC2">r_fast — on time</text>
+        <path d="M 60 160 C 60 36, 930 36, 930 142" fill="none" stroke="#E69500" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/>
+        <text x="495" y="30" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13.5" fill="#C77F00">slow reward in flight · aged by w_age(Δ)</text>
+        <circle cx="930" cy="142" r="9" fill="#E69500"/>
+        <rect x="862" y="100" width="120" height="34" rx="7" fill="#DFF1EB" stroke="#149173" stroke-width="1.5"/>
+        <text x="922" y="122" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" fill="#0F6B55">Ã = A + δ</text>
+        <path d="M 60 206 L 60 214 L 930 214 L 930 206" stroke="#E69500" stroke-width="1.4" fill="none" opacity=".7"/>
+        <text x="495" y="234" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13.5" fill="#C77F00">delay Δ = gradient steps the slow reward is in flight</text>
+      </svg>
+      <div class="eqn">
+        <span class="c"># reinjected residual at maturity step t+Δ</span><br>
+        δ = <span class="s">w_age(Δ)</span>·ρ<sup>clip</sup>·α·(<span class="s">r_slow</span> − <span class="f">r_fast</span>) &nbsp;&nbsp;&nbsp; <span class="e">Ã = A + δ</span>
+      </div>
+    </div>
+
+    <!-- right: badges + guarantee -->
+    <div class="badges">
+      <div class="badge b1"><span class="big">47.9×</span><span class="sm">closed-form policy-bias reduction at K=2 on a tabular MDP<br>(median of 5 seeds; range 18–77×)</span></div>
+      <div class="badge b2"><span class="big">‖·‖∞ = 0</span><span class="sm">RAC ≡ V-trace at the identity kernel — verified to float-64 on real 7B/8B reward distributions</span></div>
+      <div class="badge b3"><span class="big">2 lines</span><span class="sm">reward-manager patch — an O(K) queue update and one tensor add; PPO &amp; GRPO compatible</span></div>
+      <div class="panel" style="padding:18px 20px">
+        <h2 style="margin-bottom:8px">The guarantee</h2>
+        <div style="font-size:15.5px;color:var(--ink);line-height:1.5">Cumulative bias is <b>linear in the kernel slack η</b> — exactly zero when the effective delay kernel reinjects all its mass, and reducing to V-trace at the no-delay identity kernel. A Pinsker / Bretagnolle–Huber TV bound (crossover KL*≈1.6259) keeps each step's policy shift controlled.</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><i style="background:var(--fast)"></i>fast reward — on time</span>
+      <span><i style="background:var(--slow)"></i>slow reward — in flight Δ steps</span>
+      <span><i style="background:var(--bias)"></i>dropped signal — accumulating bias</span>
+      <span><i style="background:var(--exact)"></i>RAC-corrected — exact at η=0</span>
+    </div>
+  </div>
+</div></body></html>

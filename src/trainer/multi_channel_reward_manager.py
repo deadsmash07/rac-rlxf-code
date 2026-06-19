@@ -615,8 +615,8 @@ class MultiChannelRACRewardManager(AbstractRewardManager):
         # can confirm the patched run_single actually fires inside verl's
         # reward_loop worker (stdout from Ray actors gets captured in the
         # master sweep log). Delete once reward >0 is confirmed.
-        if not getattr(self, "_pilsd_diag_shown", False):
-            self._pilsd_diag_shown = True
+        if not getattr(self, "_rac_diag_shown", False):
+            self._rac_diag_shown = True
             print(f"[RAC-DIAG] run_single fired. "
                   f"ntb_keys={list(item.non_tensor_batch.keys())} "
                   f"gt={ground_truth!r} resp_prefix={response_str[:40]!r} "
@@ -679,8 +679,8 @@ class MultiChannelRACRewardManager(AbstractRewardManager):
                 score = min(1.0, len(response_str.strip()) / 64.0) if response_str else 0.0
             # RAC-DIAG: emit a one-shot score diagnostic so we
             # can see what the channel actually returned.
-            if not getattr(self, "_pilsd_score_shown", False):
-                self._pilsd_score_shown = True
+            if not getattr(self, "_rac_score_shown", False):
+                self._rac_score_shown = True
                 print(f"[RAC-DIAG-SCORE] channel={fast_ch_name} score={score} "
                       f"gt={ground_truth!r}", flush=True)
         except Exception as exc:  # pragma: no cover — defensive
