@@ -6,8 +6,6 @@ Code for **"Retroactive Advantage Correction: Closed-Form V-Trace Bias
 Correction for Delay-Aware RLHF"**, accepted at the **ICML 2026 Workshop on
 Reinforcement Learning from World Feedback (RLxF)**.
 
-**▶ [Interactive explainer, with diagrams](https://deadsmash07.github.io/rac-rlxf-code/)** — a visual walkthrough of where a reward signal gets stuck Δ optimizer steps behind the gradient that should consume it, and how RAC sends it forward. (Also viewable locally: open `docs/index.html`.)
-
 RAC is a forward-injection primitive for delay-aware
 RLHF: each slow reward that arrives late is queued, aged through a non-negative
 kernel, and reinjected as an additive correction into the next optimiser
