@@ -1,7 +1,5 @@
 # Retroactive Advantage Correction (RAC)
 
-![RAC: a reward that arrives Δ steps late still belongs to the rollout that earned it. RAC queues each pending slow reward, ages it through a decay kernel, and reinjects it as a clipped residual into the optimizer step where it lands.](assets/rac_poster.png)
-
 Code for **"Retroactive Advantage Correction: Closed-Form V-Trace Bias
 Correction for Delay-Aware RLHF"**, accepted at the **ICML 2026 Workshop on
 Reinforcement Learning from World Feedback (RLxF)**.
